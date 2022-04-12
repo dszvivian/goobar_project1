@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Goobar_Project1</string>
+    <string name="error_zipcode_entry">Enter a proper 5  digit Zipcode</string>
+    <string name="forecast_clicked_toast">Forecast: %1$.2f %2$s</string>
+</resources>
