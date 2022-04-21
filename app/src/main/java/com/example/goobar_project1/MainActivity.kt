@@ -16,8 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.goobar_project1.details.ForecastDetailsActivity
+import com.example.goobar_project1.forecast.CurrentForecastFragment
+import com.example.goobar_project1.location.LocationEntryFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , AppNavigator {
 
     val forecastRepository = ForecastRepository()
     private lateinit var tempDisplaySettingManager: TempDisplaySettingManager
@@ -26,43 +28,46 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val etZipcode: EditText = findViewById(R.id.et_zipcode)
-        val tvZipcode: TextView = findViewById(R.id.tv_zipcode)
-        val btnEnter: Button = findViewById(R.id.btn_zipcode)
+//        tempDisplaySettingManager = TempDisplaySettingManager(this)
+//
+//
+//        val rvForecastList : RecyclerView = findViewById(R.id.rv_forecastList)
+//        val dailyForecastAdapter = DailyForecastAdapter(tempDisplaySettingManager){forecast ->
+//            forecastdetailsIntent(forecast)
+//        }
+//        rvForecastList.adapter = dailyForecastAdapter
+//        rvForecastList.layoutManager = LinearLayoutManager(this)
+//
+//
+//
+//
+//        val weeklyForecastObserver =  Observer<List<DailyForecast>> {forecastItems ->
+//            dailyForecastAdapter.submitList(forecastItems)
+//        }
+//
+//        forecastRepository.weeklyForecast.observe(this , weeklyForecastObserver)
 
-        tempDisplaySettingManager = TempDisplaySettingManager(this)
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.fragmentContainer , LocationEntryFragment())
+            .commit()
 
-        //region recycler view declarations
+    }
 
-        val rvForecastList : RecyclerView = findViewById(R.id.rv_forecastList)
-        val dailyForecastAdapter = DailyForecastAdapter(tempDisplaySettingManager){forecast ->
-            forecastdetailsIntent(forecast)
-        }
-        rvForecastList.adapter = dailyForecastAdapter
-        rvForecastList.layoutManager = LinearLayoutManager(this)
+    override fun navigateToCurrentForecast(zipcode: String) {
+//        forecastRepository.loadForecast(zipcode)
 
-        //endregion
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer,CurrentForecastFragment.newnstance(zipcode))
+            .commit()
+    }
 
-        btnEnter.setOnClickListener {
-
-            val zipcode: String = etZipcode.text.toString()
-
-            if(zipcode.length != 5){
-                Toast.makeText(this@MainActivity, R.string.error_zipcode_entry , Toast.LENGTH_SHORT).show()
-                etZipcode.text.clear()
-            }else{
-                forecastRepository.loadForecast(zipcode)
-                etZipcode.text.clear()
-            }
-
-        }
-
-        val weeklyForecastObserver =  Observer<List<DailyForecast>> {forecastItems ->
-            dailyForecastAdapter.submitList(forecastItems)
-        }
-
-        forecastRepository.weeklyForecast.observe(this , weeklyForecastObserver)
-
+    override fun navigateToLocationEntry() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer,LocationEntryFragment())
+            .commit()
     }
 
     // Explicit Intent to share data b/w ForecastDetailsActivity
@@ -89,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
 
 
