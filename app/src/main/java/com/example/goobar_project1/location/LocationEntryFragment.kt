@@ -9,17 +9,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.example.goobar_project1.AppNavigator
+import androidx.navigation.fragment.findNavController
 import com.example.goobar_project1.R
 
 class LocationEntryFragment : Fragment() {
-
-    private lateinit var appNavigator: AppNavigator
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        appNavigator = context as AppNavigator
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,14 +35,14 @@ class LocationEntryFragment : Fragment() {
             }
             else{
 //                forecastRepository.loadForecast(zipcode)
-                appNavigator.navigateToCurrentForecast(zipcode)
+                findNavController().navigateUp()
 
             }
 
         }
 
 
-        return view ;
+        return view
     }
 
 

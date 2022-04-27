@@ -15,24 +15,25 @@ import com.example.goobar_project1.*
 import com.example.goobar_project1.details.ForecastDetailsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class CurrentForecastFragment : Fragment() {
+class WeeklyForecastFragment : Fragment() {
 
     private val forecastRepository = ForecastRepository()
     private lateinit var tempDisplaySettingManager: TempDisplaySettingManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
+        val view = inflater.inflate(R.layout.fragment_weekly_forecast, container, false)
 
         //code here1
 
         val btnLocationEntry : FloatingActionButton = view.findViewById(R.id.btn_locationEntry)
 
         btnLocationEntry.setOnClickListener{
-            showLocationEntry()
+           showLocationEntry()
         }
 
         tempDisplaySettingManager = TempDisplaySettingManager(requireContext())
@@ -42,7 +43,7 @@ class CurrentForecastFragment : Fragment() {
 
         val rvForecastList : RecyclerView = view.findViewById(R.id.rv_forecastList)
         val dailyForecastAdapter = DailyForecastAdapter(tempDisplaySettingManager){
-            showForecastDetails(it)
+           showForecastDetails(it)
         }
         rvForecastList.adapter = dailyForecastAdapter
         rvForecastList.layoutManager = LinearLayoutManager(requireContext())
@@ -62,20 +63,20 @@ class CurrentForecastFragment : Fragment() {
     }
 
     private fun showLocationEntry(){
-        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToLocationEntryFragment()
+        val action = WeeklyForecastFragmentDirections.actionWeeklyForecastFragmentToLocationEntryFragment()
         findNavController().navigate(action)
     }
 
     private fun showForecastDetails(forecast: DailyForecast){
-        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(forecast.temp,forecast.desc)
+        val action = WeeklyForecastFragmentDirections.actionWeeklyForecastFragmentToForecastDetailsFragment(forecast.temp,forecast.desc)
         findNavController().navigate(action)
     }
 
     companion object{
         const val KEY_ZIPCODE = "key_zipcode"
 
-        fun newnstance(zipcode:String):CurrentForecastFragment {
-            val fragment = CurrentForecastFragment()
+        fun newinstance(zipcode:String):WeeklyForecastFragment {
+            val fragment = WeeklyForecastFragment()
 
             val args = Bundle()
             args.getString(KEY_ZIPCODE,zipcode)
