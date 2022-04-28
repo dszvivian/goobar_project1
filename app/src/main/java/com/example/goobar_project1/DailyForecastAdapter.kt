@@ -1,12 +1,21 @@
 package com.example.goobar_project1
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+
+import com.example.goobar_project1.api.DailyForecast
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 //region explanation
 
@@ -16,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 //endregion
 
+private val DATE_FORMAT = SimpleDateFormat("MM-dd-yyyy")
+
 class DailyForecastViewHolder(view : View ,
 private val tempDisplaySettingManager: TempDisplaySettingManager
 ) : RecyclerView.ViewHolder(view){
@@ -23,11 +34,18 @@ private val tempDisplaySettingManager: TempDisplaySettingManager
     //declare the properties
     private val temptext = view.findViewById<TextView>(R.id.sample_tempText)
     private val descText = view.findViewById<TextView>(R.id.sample_descText)
+    private val dateText = view.findViewById<TextView>(R.id.sample_tvDate)
+    private val forecastIcon = view.findViewById<ImageView>(R.id.sample_forecastIcon)
 
     fun bind(dailyForecast: DailyForecast){
         // set the text
-        temptext.text = formatTempForDisplay(dailyForecast.temp ,tempDisplaySettingManager.getTempDisplaySettings())
-        descText.text = dailyForecast.desc.toString()
+        temptext.text = formatTempForDisplay(dailyForecast.temp.max ,tempDisplaySettingManager.getTempDisplaySettings())
+        descText.text = dailyForecast.weather[0].description
+        dateText.text = DATE_FORMAT.format(Date(dailyForecast.date *1000))
+
+        val iconId = dailyForecast.weather[0].icon
+        forecastIcon.load("http://openweathermap.org/img/wn/${iconId}@2x.png")
+
     }
 
 }

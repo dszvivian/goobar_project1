@@ -4,19 +4,27 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
     compileSdk 32
+    buildToolsVersion "29.0.3"
 
     apply plugin: 'androidx.navigation.safeargs.kotlin'
 
     defaultConfig {
         applicationId "com.example.goobar_project1"
-        minSdk 16
+        minSdk 21
         targetSdk 32
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "OPEN_WEATHER_MAP_API_KEY", "\"${localProperties["OPEN_WEATHER_MAP_API_KEY"]}\"")
+
+
     }
 
     buildTypes {
@@ -46,6 +54,13 @@ dependencies {
     //navigation component dependencies
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
+
+    //Retrofit dependencies
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
+
+    //coil dependencies
+    implementation("io.coil-kt:coil:2.0.0-rc03")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.goobar_project1.*
+import com.example.goobar_project1.api.CurrentWeather
 import com.example.goobar_project1.details.ForecastDetailsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -19,6 +21,7 @@ class CurrentForecastFragment : Fragment() {
 
     private val forecastRepository = ForecastRepository()
     private lateinit var tempDisplaySettingManager: TempDisplaySettingManager
+    private lateinit var locationRepository: LocationRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,23 +43,27 @@ class CurrentForecastFragment : Fragment() {
         val zipcode = arguments?.getString(KEY_ZIPCODE) ?: ""
 
 
-        val rvForecastList : RecyclerView = view.findViewById(R.id.rv_forecastList)
-        val dailyForecastAdapter = DailyForecastAdapter(tempDisplaySettingManager){
-            showForecastDetails(it)
+
+
+
+        val locationName: TextView = view.findViewById(R.id.tv_currentLocationName)
+        val tempText : TextView = view.findViewById(R.id.tv_currentTemp)
+
+        val currentWeatherObserver = Observer<CurrentWeather> {weather ->
+            //todo : update our list Adapter
+            locationName.text = weather.name
+            tempText.text = formatTempForDisplay(weather.forecast.temp , tempDisplaySettingManager.getTempDisplaySettings())
         }
-        rvForecastList.adapter = dailyForecastAdapter
-        rvForecastList.layoutManager = LinearLayoutManager(requireContext())
+        forecastRepository.currentWeather.observe(viewLifecycleOwner,currentWeatherObserver)
 
-
-
-
-        val weeklyForecastObserver =  Observer<List<DailyForecast>> { forecastItems ->
-            dailyForecastAdapter.submitList(forecastItems)
+        locationRepository = LocationRepository(requireContext())
+        val savedLocationObserver = Observer<Location>{saveLocation ->
+            when(saveLocation){
+                is Location.Zipcode -> forecastRepository.loadCurrentForecast(saveLocation.zipcode)
+            }
         }
 
-        forecastRepository.weeklyForecast.observe(viewLifecycleOwner , weeklyForecastObserver)
-
-        forecastRepository.loadForecast(zipcode)
+        locationRepository.savedLocation.observe(viewLifecycleOwner,savedLocationObserver)
 
         return view
     }
@@ -66,10 +73,11 @@ class CurrentForecastFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun showForecastDetails(forecast: DailyForecast){
-        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(forecast.temp,forecast.desc)
-        findNavController().navigate(action)
-    }
+    //todo:clean alll the comments and delete showForecastDetails which is not needed
+//    private fun showForecastDetails(forecast: DailyForecast){
+//        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(forecast.temp,forecast.desc)
+//        findNavController().navigate(action)
+//    }
 
     companion object{
         const val KEY_ZIPCODE = "key_zipcode"

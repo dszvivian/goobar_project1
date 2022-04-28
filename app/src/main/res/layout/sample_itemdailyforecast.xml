@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="180dp"
     android:background="@color/veryLightGrey"
-    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
 
     >
 
@@ -16,13 +16,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:text="78.38"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        tools:text="78.38"
 
-        />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toTopOf="@+id/sample_tvDate"
+        app:layout_constraintStart_toEndOf="@+id/sample_forecastIcon"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/sample_descText"
@@ -35,4 +34,24 @@
         app:layout_constraintBottom_toBottomOf="@id/sample_tempText"
         app:layout_constraintStart_toEndOf="@+id/sample_tempText"
         app:layout_constraintTop_toTopOf="@id/sample_tempText" />
+
+    <TextView
+        android:id="@+id/sample_tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/sample_tempText"
+        app:layout_constraintTop_toBottomOf="@+id/sample_tempText" />
+
+    <ImageView
+        android:id="@+id/sample_forecastIcon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_cloud_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

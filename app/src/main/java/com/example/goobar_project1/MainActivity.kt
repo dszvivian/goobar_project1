@@ -38,13 +38,6 @@ class MainActivity : AppCompatActivity() {
     }
     
 
-    // Explicit Intent to share data b/w ForecastDetailsActivity
-    private fun forecastdetailsIntent(forecast:DailyForecast){
-        val forecastDetailsIntent = Intent(this@MainActivity , ForecastDetailsFragment::class.java)
-        forecastDetailsIntent.putExtra("key_temp",forecast.temp )
-        forecastDetailsIntent.putExtra("key_desc",forecast.desc )
-        startActivity(forecastDetailsIntent)
-    }
 
     // creates a Menu Option on the Activity
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
