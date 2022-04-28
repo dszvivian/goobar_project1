@@ -1,7 +1,15 @@
 package com.example.goobar_project1
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.goobar_project1.api.CurrentWeather
+import com.example.goobar_project1.api.WeeklyForecast
+import com.example.goobar_project1.api.createOpenWeatherMapService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
 import kotlin.random.Random
 
 //This class contains all the data that is needed to feed the recyclerView
@@ -12,16 +20,78 @@ class ForecastRepository {
     // Weekly Forecast can only be changed from the repository
     // But not from the main Activity
 
-    private val _weeklyForecast = MutableLiveData<List<DailyForecast>>()
-    val weeklyForecast : LiveData<List<DailyForecast>> = _weeklyForecast
+    private val _currentWeather = MutableLiveData<CurrentWeather>()
+    val currentWeather : LiveData<CurrentWeather> = _currentWeather
+
+    private val _weeklyForecast = MutableLiveData<WeeklyForecast>()
+    val weeklyForecast : LiveData<WeeklyForecast> = _weeklyForecast
 
 
-    fun loadForecast(zipcode:String){
-        val randomValues = List(45){ Random.nextFloat().rem(100) * 100 }  // random values from 0 - 100
-        val forecastItems = randomValues.map{ temp -> DailyForecast(temp , gettempDescription(temp)) }
+    fun loadWeeklyForecast(zipcode:String){
+        val call = createOpenWeatherMapService().currentWeather(zipcode , "imperial" , BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+        call.enqueue(object : Callback<CurrentWeather>{
 
-        _weeklyForecast.value = forecastItems
+            override fun onFailure(call: Call<CurrentWeather>, t: Throwable) {
+                Log.e(ForecastRepository::class.java.simpleName , "Error loading WeeklyWeather",t)
+            }
+
+            override fun onResponse(call: Call<CurrentWeather>, response: Response<CurrentWeather>)
+            {
+                val weatherResponse = response.body()
+                if(weatherResponse != null){
+                    //load 7 Day forecast
+                    val forecastCall = createOpenWeatherMapService().sevenDayForecast(
+                        lat = weatherResponse.coord.lat ,
+                        lon =  weatherResponse.coord.lon ,
+                        exclude = "current,minutely,hourly",
+                        units = "imperial",
+                        apikey = BuildConfig.OPEN_WEATHER_MAP_API_KEY
+                    )
+                    forecastCall.enqueue(object : Callback<WeeklyForecast>{
+
+                        override fun onFailure(call: Call<WeeklyForecast>, t: Throwable) {
+                            Log.e(ForecastRepository::class.java.simpleName , "Error Loading weeekly forecast")
+                        }
+
+                        override fun onResponse(call: Call<WeeklyForecast>, response: Response<WeeklyForecast>) {
+                            val weeklyForecastResponse = response.body()
+                            if(weeklyForecastResponse != null){
+                                _weeklyForecast.value = weeklyForecastResponse!!
+                            }
+                        }
+
+
+
+                    })
+                }
+            }
+
+
+        })
     }
+
+
+    fun loadCurrentForecast(zipcode:String){
+        val call = createOpenWeatherMapService().currentWeather(zipcode , "imperial" , BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+        call.enqueue(object : Callback<CurrentWeather>{
+
+            override fun onFailure(call: Call<CurrentWeather>, t: Throwable) {
+                Log.e(ForecastRepository::class.java.simpleName , "Error loading CurrentWeather",t)
+            }
+
+            override fun onResponse(call: Call<CurrentWeather>, response: Response<CurrentWeather>)
+            {
+                val weatherResponse = response.body()
+                if(weatherResponse != null){
+                    _currentWeather.value = weatherResponse!!
+                }
+            }
+
+
+        })
+    }
+
+
 
 
     fun gettempDescription(temp: Float) : String{
